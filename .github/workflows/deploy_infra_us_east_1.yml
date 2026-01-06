@@ -1,0 +1,51 @@
+name: deploy-infra-us-east-1
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python (for packaging scripts)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.3"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Package Lambda services
+        run: |
+          chmod +x scripts/package_lambda_services_for_deployment.sh
+          scripts/package_lambda_services_for_deployment.sh
+
+      - name: Terraform init + apply
+        working-directory: infra_terraform
+        run: |
+          terraform init
+          terraform apply -var-file=envs/dev/terraform.tfvars -auto-approve
+
+      - name: Show outputs
+        working-directory: infra_terraform
+        run: |
+          terraform output
