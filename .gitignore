@@ -13,3 +13,12 @@ crash.log
 # OS / editor
 .DS_Store
 .vscode/
+
+# Build artifacts and ML binaries (do not commit)
+build/
+models/*.joblib
+reports/*.json
+
+# Terraform local state/cache (do not commit)
+infra_terraform/.terraform/
+infra_terraform/.terraform.lock.hcl
