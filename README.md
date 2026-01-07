@@ -86,6 +86,7 @@ Manual destroy (Terraform destroy)
 
 Key features:
 
-No always-on infrastructure
-Bash-driven automation
-Safe for AWS Free Tier usage
+1. No always-on infrastructure
+2. Bash-driven automation
+3. Safe for AWS Free Tier usage
+
