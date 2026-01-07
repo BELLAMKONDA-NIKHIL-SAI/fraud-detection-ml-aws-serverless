@@ -78,10 +78,10 @@ CI/CD Pipeline (GitHub Actions)
 
 Pipelines included:
 
-CI checks (linting)
-Manual deploy (Terraform apply + model upload)
-Smoke tests (bash-based API validation)
-Manual destroy (Terraform destroy)
+1. CI checks (linting)
+2. Manual deploy (Terraform apply + model upload)
+3. Smoke tests (bash-based API validation)
+4. Manual destroy (Terraform destroy)
 
 
 Key features:
@@ -89,4 +89,5 @@ Key features:
 1. No always-on infrastructure
 2. Bash-driven automation
 3. Safe for AWS Free Tier usage
+
 
