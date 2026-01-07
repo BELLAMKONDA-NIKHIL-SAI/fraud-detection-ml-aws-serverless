@@ -67,7 +67,6 @@ IV. Infrastructure as Code (Terraform)
 Resources are created only when needed and can be destroyed safely.
 
 
-
 V. CI/CD Pipeline (GitHub Actions)
 
   a. Pipeline includes:
@@ -83,5 +82,44 @@ V. CI/CD Pipeline (GitHub Actions)
     2. Bash-driven automation
     3. Safe for AWS Free Tier usage
 
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+
+VI. How to Deploy (Demo Mode):
+
+  Step 1:
+    
+    # Package Lambda services
+    scripts/package_lambda_services_for_deployment.sh
+
+    # Deploy infrastructure
+    cd infra_terraform
+    terraform apply -var-file=envs/dev/terraform.tfvars -auto-approve
+
+  Step 2:
+    
+    # Upload model parameters:
+    scripts/export_and_upload_model_params.sh
+
+  Step 3:
+    
+    # Run smoke tests:
+    scripts/smoke_test_api_endpoints.sh
+
+  Step 4:
+    
+    # Destroy everything after demo:
+    cd infra_terraform
+    terraform destroy -var-file=envs/dev/terraform.tfvars -auto-approve
+
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
+.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .
 
 
+VII. SYSTEM ARCHITECTURE:
+
+<img width="1536" height="1024" alt="Fraud Detection Sys Arch" src="https://github.com/user-attachments/assets/82b086ef-09df-45d0-8004-31bc2bcedcc1" />
