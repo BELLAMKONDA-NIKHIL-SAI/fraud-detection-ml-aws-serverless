@@ -1,32 +1,43 @@
+# Name of the workflow shown in the GitHub Actions UI
 name: deploy-infra-us-east-1
 
+# Manual trigger only (no automatic runs on push/PR)
 on:
   workflow_dispatch:
 
+# Minimum permissions required for this workflow
 permissions:
   contents: read
 
 jobs:
+  # Single deployment job
   deploy:
+    # Use a fresh Ubuntu runner
     runs-on: ubuntu-latest
+
+    # Environment variables available to all steps
     env:
       AWS_REGION: us-east-1
       AWS_DEFAULT_REGION: us-east-1
 
     steps:
+      # Step 1: Checkout repository code
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Setup Python (used by packaging scripts)
       - name: Setup Python (for packaging scripts)
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
+      # Step 3: Install a specific Terraform version
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.14.3"
 
+      # Step 4: Configure AWS credentials securely using GitHub Secrets
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -34,17 +45,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      # Step 5: Package Lambda functions before deployment
       - name: Package Lambda services
         run: |
+          # Ensure the script is executable
           chmod +x scripts/package_lambda_services_for_deployment.sh
+
+          # Create deployment-ready Lambda ZIP files
           scripts/package_lambda_services_for_deployment.sh
 
+      # Step 6: Initialize Terraform and apply infrastructure
       - name: Terraform init + apply
         working-directory: infra_terraform
         run: |
+          # Initialize backend, providers, and modules
           terraform init
+
+          # Deploy infrastructure using environment-specific variables
           terraform apply -var-file=envs/dev/terraform.tfvars -auto-approve
 
+      # Step 7: Display Terraform outputs (endpoints, ARNs, etc.)
       - name: Show outputs
         working-directory: infra_terraform
         run: |
