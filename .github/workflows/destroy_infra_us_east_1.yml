@@ -1,27 +1,38 @@
+# Name of the workflow as shown in GitHub Actions
 name: destroy-infra-us-east-1
 
+# Manual trigger only to prevent accidental destruction
 on:
   workflow_dispatch:
 
+# Minimal permissions (read-only access to repository)
 permissions:
   contents: read
 
 jobs:
+  # Job responsible for tearing down infrastructure
   destroy:
+    # GitHub-hosted Linux runner
     runs-on: ubuntu-latest
+
+    # AWS region environment variables used by Terraform and AWS SDKs
     env:
       AWS_REGION: us-east-1
       AWS_DEFAULT_REGION: us-east-1
 
     steps:
+      # Step 1: Checkout Terraform configuration
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Install a pinned Terraform version
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
+          # Pin Terraform version for consistent destroy behavior
           terraform_version: "1.14.3"
 
+      # Step 3: Inject AWS credentials securely from GitHub Secrets
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -29,8 +40,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      # Step 4: Initialize Terraform and destroy infrastructure
       - name: Terraform init + destroy
         working-directory: infra_terraform
         run: |
+          # Initialize providers, backend, and modules
           terraform init
+
+          # Destroy all resources defined in Terraform for the dev environment
           terraform destroy -var-file=envs/dev/terraform.tfvars -auto-approve
