@@ -1,27 +1,46 @@
+# Name of the GitHub Actions workflow (shown in the Actions tab)
 name: ci-checks
 
+# Events that trigger this workflow
 on:
+  # Runs when a pull request is opened, updated, or reopened
   pull_request:
+
+  # Runs when code is pushed to the main branch
   push:
     branches: [ "main" ]
 
+# Jobs define what tasks will run
 jobs:
+  # Job name: lint (can be anything descriptive)
   lint:
+    # GitHub-hosted runner (latest Ubuntu Linux)
     runs-on: ubuntu-latest
+
+    # Steps are executed sequentially
     steps:
+      # Step 1: Checkout repository code into the runner
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Install and configure Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
+          # Specify Python version to match your project/runtime
           python-version: "3.12"
 
+      # Step 3: Install CI-specific dependencies
       - name: Install lint deps
         run: |
+          # Upgrade pip to avoid dependency resolution issues
           python -m pip install --upgrade pip
+
+          # Install dependencies required for linting and CI checks
           pip install -r requirements-ci.txt
 
+      # Step 4: Run Ruff linter
       - name: Ruff lint
         run: |
+          # Run Ruff against the entire repository
           ruff check .
