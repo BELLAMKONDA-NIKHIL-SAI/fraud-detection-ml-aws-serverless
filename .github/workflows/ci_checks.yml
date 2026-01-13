@@ -13,7 +13,7 @@ on:
 # Jobs define what tasks will run
 jobs:
   # Job name: lint (can be anything descriptive)
-  lint:
+  ostest:
     # GitHub-hosted runner (latest Ubuntu Linux)
     runs-on: ubuntu-latest
 
